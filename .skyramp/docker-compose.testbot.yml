@@ -13,7 +13,7 @@ services:
         git config --global --add safe.directory /workspace &&
         corepack enable &&
         pnpm install --frozen-lockfile --prefer-offline &&
-        sed -i 's/"include":.*/"include": ["src"]/' apps/posts/tsconfig.json &&
+        if [ -f apps/posts/tsconfig.json ]; then sed -i 's/"include":.*/"include": ["src"]/' apps/posts/tsconfig.json; fi &&
         find . -name tsconfig.tsbuildinfo -not -path '*/node_modules/*' -delete &&
         NX_SKIP_NX_CACHE=true pnpm build:production &&
         chmod -R a+rX ghost/core/core/built &&
