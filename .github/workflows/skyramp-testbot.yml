@@ -51,3 +51,11 @@ jobs:
           targetReadyCheckTimeout: 3600
           targetTeardownCommand: docker compose -f .skyramp/docker-compose.testbot.yml down -v --remove-orphans
           authTokenCommand: bash .skyramp/get-auth-token.sh
+
+      - name: Upload setup log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: setup-testbot-log
+          path: .skyramp-setup-testbot.log
+          if-no-files-found: ignore
