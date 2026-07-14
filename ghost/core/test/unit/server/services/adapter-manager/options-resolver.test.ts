@@ -1,6 +1,5 @@
-const assert = require('node:assert/strict');
-
-const resolveAdapterOptions = require('../../../../../core/server/services/adapter-manager/options-resolver');
+import assert from 'node:assert/strict';
+import {resolveAdapterOptions} from '../../../../../core/server/services/adapter-manager/utils';
 
 describe('Adapter Manager: options resolver', function () {
     it('creates empty configs for unknown adapter with a default (active) instance', function () {
