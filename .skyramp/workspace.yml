@@ -8,7 +8,7 @@ workspace:
   repoUrl: https://github.com/shinychimra07/Ghost.git
 metadata:
   schemaVersion: v1
-  mcpVersion: 1.0.0
+  mcpVersion: latest
   executorVersion: v1.0.0
 services:
   - serviceName: ghost-admin-api
