@@ -1,0 +1,47 @@
+# Skyramp Testbot configuration for Ghost.
+# API tests authenticate with Authorization: Ghost <SKYRAMP_TEST_TOKEN>.
+# UI/browser tests should log in to http://localhost:2368/ghost with the
+# same credentials used by .skyramp/get-auth-token.sh:
+#   eval@ghost.local / Skyramp!Eval2024#
+workspace:
+  repoName: shinychimra07/Ghost
+  repoUrl: https://github.com/shinychimra07/Ghost.git
+metadata:
+  schemaVersion: v1
+  mcpVersion: 1.0.0
+  executorVersion: v1.0.0
+services:
+  - serviceName: ghost-admin-api
+    language: typescript
+    framework: playwright
+    testDirectory: e2e/tests
+    api:
+      authType: bearer
+      authHeader: Authorization
+      authScheme: Ghost
+      baseUrl: http://localhost:2368/ghost/api/admin
+    runtimeDetails:
+      runtime: docker
+      dockerNetwork: skyramp_default
+  - serviceName: ghost-content-api
+    language: typescript
+    framework: playwright
+    testDirectory: e2e/tests
+    api:
+      authType: none
+      authHeader: ""
+      baseUrl: http://localhost:2368/ghost/api/content
+    runtimeDetails:
+      runtime: docker
+      dockerNetwork: skyramp_default
+  - serviceName: ghost-ui
+    language: typescript
+    framework: playwright
+    testDirectory: e2e/tests
+    api:
+      authType: none
+      authHeader: ""
+      baseUrl: http://localhost:2368/ghost
+    runtimeDetails:
+      runtime: docker
+      dockerNetwork: skyramp_default

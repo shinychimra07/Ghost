@@ -1,0 +1,55 @@
+services:
+  # Build step: install dependencies, build production assets, and create the
+  # standalone Ghost package consumed by the runtime image.
+  ghost-builder:
+    image: node:22.18.0-bookworm-slim
+    working_dir: /workspace
+    volumes:
+      - ..:/workspace
+      - pnpm-store:/root/.local/share/pnpm/store
+    command: >
+      bash -c "
+        apt-get update -qq && apt-get install -y -qq --no-install-recommends git && rm -rf /var/lib/apt/lists/* &&
+        git config --global --add safe.directory /workspace &&
+        corepack enable &&
+        pnpm install --frozen-lockfile --prefer-offline &&
+        sed -i 's/"include":.*/"include": ["src"]/' apps/posts/tsconfig.json &&
+        find . -name tsconfig.tsbuildinfo -not -path '*/node_modules/*' -delete &&
+        NX_SKIP_NX_CACHE=true pnpm build:production &&
+        chmod -R a+rX ghost/core/core/built &&
+        PNPM_PACKAGE_IMPORT_METHOD=copy pnpm --filter ghost archive &&
+        chown -R $(stat -c '%u:%g' /workspace) ghost/core/package
+      "
+
+  # Production Ghost runtime with SQLite. The admin assets are built into the
+  # package, so browser UI tests can load /ghost without a separate dev server.
+  ghost:
+    build:
+      context: ../ghost/core/package
+      dockerfile: ../../../Dockerfile.production
+      target: full
+    ports:
+      - "2368:2368"
+    environment:
+      NODE_ENV: production
+      url: http://localhost:2368
+      server__host: 0.0.0.0
+      server__port: 2368
+      database__client: sqlite3
+      database__connection__filename: content/data/ghost.db
+      security__staffDeviceVerification: false
+    user: root
+    command: >
+      sh -c "chmod -R a+r /home/ghost/core/built/admin/ && exec setpriv --reuid=ghost --regid=ghost --init-groups node index.js 2>&1"
+    volumes:
+      - ghost-content:/home/ghost/content
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:2368/ghost/api/admin/site/').then(r=>process.exit(r.ok||r.status===401?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 15s
+
+volumes:
+  pnpm-store:
+  ghost-content:

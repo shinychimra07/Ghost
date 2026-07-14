@@ -43,3 +43,8 @@ jobs:
           githubToken: ${{ steps.skyramp-testbot-app-token.outputs.token }}
           githubAppId: ${{ secrets.SKYRAMP_TESTBOT_APP_ID }}
           githubAppPrivateKey: ${{ secrets.SKYRAMP_TESTBOT_APP_PRIVATE_KEY }}
+          nodeVersion: 22.18.0
+          targetSetupCommand: bash .skyramp/setup-testbot.sh
+          targetReadyCheckCommand: node -e "fetch('http://localhost:2368/ghost/api/admin/site/').then(r=>process.exit(r.ok||r.status===401?0:1)).catch(()=>process.exit(1))"
+          targetTeardownCommand: docker compose -f .skyramp/docker-compose.testbot.yml down -v --remove-orphans
+          authTokenCommand: bash .skyramp/get-auth-token.sh
