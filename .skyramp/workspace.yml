@@ -9,7 +9,7 @@ workspace:
 metadata:
   schemaVersion: v1
   mcpVersion: latest
-  executorVersion: v1.0.0
+  executorVersion: v1.3.34
 services:
   - serviceName: ghost-admin-api
     language: typescript
