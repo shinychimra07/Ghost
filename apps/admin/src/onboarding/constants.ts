@@ -18,6 +18,13 @@ export const ONBOARDING_STEPS = [
         title: "Customize your design",
     },
     {
+        description: "Bring existing posts, tags, and subscribers into Ghost.",
+        icon: LucideIcon.Upload,
+        id: "import-content",
+        route: "/settings/migration?ref=setup",
+        title: "Import your content",
+    },
+    {
         description: "Get to know a writing experience you'll love.",
         icon: LucideIcon.PenLine,
         id: "first-post",
